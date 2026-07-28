@@ -1,17 +1,10 @@
 import './App.css'
+import BundleBuilder from "./components/bundle/BundleBuilder";
+
 
 function App() {
 
-  return (
-    <>
-      <h1 className="text-3xl font-bold underline">
-      Bundle Builder
-    </h1>
-
-   
-      <section id="spacer"></section>
-    </>
-  )
+ return <BundleBuilder />;
 }
 
 export default App
