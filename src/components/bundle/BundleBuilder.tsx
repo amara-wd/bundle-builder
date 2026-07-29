@@ -1,4 +1,11 @@
 import { useState } from "react";
+import CameraIcon from "../../assets/icons/camera.png";
+import PlanIcon from "../../assets/icons/plan.png";
+import SensorsIcon from "../../assets/icons/sensors.png";
+import ProtectionIcon from "../../assets/icons/protection.png";
+import ArrowDown from "../../assets/icons/arrow-down.png";
+import ArrowUp from "../../assets/icons/arrow-up.png";
+
 import productsData from "../../data/products.json";
 import {
   initialActiveVariants,
@@ -21,6 +28,13 @@ const BundleBuilder = () => {
   const [activeStep, setActiveStep] = useState("cameras");
 
   const steps = productsData.steps;
+
+const stepIcons = {
+  cameras: CameraIcon,
+  plan: PlanIcon,
+  sensors: SensorsIcon,
+  protection: ProtectionIcon,
+};
 
   const updateQuantity = (
     productId: string,
@@ -65,20 +79,30 @@ const BundleBuilder = () => {
   };
 
   return (
-    <main className="min-h-screen bg-slate-100 p-4 md:p-8">
-      <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)]">
-        {/* LEFT - BUILDER */}
-        <section>
-          <div className="space-y-2">
+ <main className="min-h-screen bg-white">
+  <div className="mx-auto flex w-full max-w-[1196px] flex-col gap-6 py-[49px] lg:flex-row lg:items-start lg:gap-[29px]">  {/* LEFT - BUILDER */}
+<section className="w-full lg:w-[768px]">
+         <div className="flex flex-col gap-[13px]">
             {steps.map((step) => {
               const isOpen =
                 activeStep === step.id;
-
+                const selectedCount = step.products.filter(
+  (product) => getProductQuantity(product) > 0
+).length;
+const Icon =
+  stepIcons[step.id as keyof typeof stepIcons];
               return (
-                <div
-                  key={step.id}
-                  className="overflow-hidden rounded-lg border border-slate-200 bg-white"
-                >
+               <div
+  key={step.id}
+ className={`overflow-hidden rounded-[10px] border border-[#D8DCE8]
+${
+isOpen
+?
+"bg-[#EDF4FF]"
+:
+"bg-white"
+}`}
+>
                   {/* Step Header */}
                   <button
                     type="button"
@@ -89,105 +113,87 @@ const BundleBuilder = () => {
                     }
                     className="flex w-full items-center justify-between px-5 py-4 text-left"
                   >
-                    <div>
-                      <p className="text-[10px] font-medium uppercase tracking-wide text-slate-500">
-                        Step {step.stepNumber} of 4
-                      </p>
+                  <div>
+    <p className="text-[10px] uppercase tracking-[1px] text-[#8A8A8A]">
+        STEP {step.stepNumber} OF 4
+    </p>
 
-                      <h2 className="mt-1 text-base font-semibold text-slate-900">
-                        {step.title}
-                      </h2>
-                    </div>
+    <div className="mt-1 flex items-center gap-2">
 
-                    <span className="text-sm text-violet-600">
-                      {isOpen ? "⌃" : "⌄"}
-                    </span>
+
+
+<div className="flex items-center gap-2">
+  <img
+    src={Icon}
+    alt={step.title}
+    className="h-5 w-5 object-contain"
+  />
+
+  <h2 className="text-[20px] font-semibold">
+    {step.title}
+  </h2>
+</div>
+
+    </div>
+</div>
+
+                 <div className="flex items-center gap-2">
+  {isOpen && (
+  <span className="text-[13px] font-medium text-[#6D4AFF]">
+    {selectedCount} selected
+  </span>
+)}
+
+  <img
+  src={isOpen ? ArrowUp : ArrowDown}
+  alt=""
+/>
+</div>
                   </button>
 
                   {/* Step Content */}
                   {isOpen && (
-                    <div className="border-t border-slate-200 bg-slate-100 p-4">
-                      {step.products.length > 0 ? (
-                        <div className="grid gap-4 md:grid-cols-2">
-                          {step.products.map(
-                            (product) => (
-                              <ProductCard
-                                key={product.id}
-                                product={product}
-                                activeVariant={
-                                  activeVariants[
-                                    product.id
-                                  ]
-                                }
-                                quantity={getProductQuantity(
-                                  product
-                                )}
-                                onVariantChange={(
-                                  variantId
-                                ) =>
-                                  updateActiveVariant(
-                                    product.id,
-                                    variantId
-                                  )
-                                }
-                                onQuantityChange={(
-                                  quantity
-                                ) => {
-                                  const variantId =
-                                    product.variants
-                                      .length > 0
-                                      ? activeVariants[
-                                          product.id
-                                        ]
-                                      : "default";
+  <div className="border-t border-slate-200 bg-slate-100 p-4">
+    {step.products.length > 0 ? (
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        {step.products.map((product) => (
+          <ProductCard
+            key={product.id}
+            product={product}
+            activeVariant={activeVariants[product.id]}
+            quantity={getProductQuantity(product)}
+            onVariantChange={(variantId) =>
+              updateActiveVariant(product.id, variantId)
+            }
+            onQuantityChange={(quantity) => {
+              const variantId =
+                product.variants.length > 0
+                  ? activeVariants[product.id]
+                  : "default";
 
-                                  updateQuantity(
-                                    product.id,
-                                    variantId,
-                                    quantity
-                                  );
-                                }}
-                              />
-                            )
-                          )}
-                        </div>
-                      ) : (
-                        <p className="py-8 text-center text-sm text-slate-500">
-                          No products available.
-                        </p>
-                      )}
+              updateQuantity(
+                product.id,
+                variantId,
+                quantity
+              );
+            }}
+          />
+        ))}
+      </div>
+    ) : (
+      <p className="py-8 text-center text-sm text-slate-500">
+        No products available.
+      </p>
+    )}
 
-                      {/* Next Button */}
-                      {step.stepNumber < 4 && (
-                        <div className="mt-5 flex justify-center">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const nextStep =
-                                steps[
-                                  step.stepNumber
-                                ];
-
-                              if (nextStep) {
-                                setActiveStep(
-                                  nextStep.id
-                                );
-                              }
-                            }}
-                            className="rounded-md border border-violet-500 bg-white px-6 py-2 text-sm font-medium text-violet-600 transition hover:bg-violet-50"
-                          >
-                            Next:{" "}
-                            {steps[
-                              step.stepNumber
-                            ]?.title.replace(
-                              "Choose your ",
-                              ""
-                            )}
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
+    {/* Next Button */}
+    {step.stepNumber < 4 && (
+      <div className="mt-5 flex justify-center">
+        {/* button */}
+      </div>
+    )}
+  </div>
+)}
                 </div>
               );
             })}
@@ -195,7 +201,7 @@ const BundleBuilder = () => {
         </section>
 
         {/* RIGHT - REVIEW */}
-        <aside className="h-fit rounded-lg bg-blue-50 p-6">
+      <aside className="w-full rounded-[10px] bg-[#EDF4FF] px-5 py-[15px] lg:w-[399px]">
           <h2 className="text-xl font-semibold text-slate-900">
             Your security system
           </h2>

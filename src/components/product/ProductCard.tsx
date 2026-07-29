@@ -19,38 +19,50 @@ const ProductCard = ({
   const isSelected = quantity > 0;
 
   return (
-    <article
-      className={`relative flex min-h-42.5 flex-col rounded-xl border-2 bg-white p-4 transition ${
-        isSelected
-          ? "border-violet-500"
-          : "border-transparent"
-      }`}
-    >
+ <article
+  className={`relative rounded-[14px] border-2 bg-white px-[16px] py-[14px] transition-all ${
+    isSelected
+      ? "border-[#6D4AFF]"
+      : "border-[#E6EAF4]"
+  }`}
+>
       {/* Discount Badge */}
       {product.discount && (
-        <span className="absolute left-3 top-3 rounded-full bg-violet-600 px-2 py-1 text-xs font-semibold text-white">
+        <span
+className="
+absolute
+left-3
+top-3
+rounded-full
+bg-[#5B39E6]
+px-[8px]
+py-[3px]
+text-[10px]
+font-semibold
+text-white"
+>
           {product.discount}
         </span>
       )}
 
-      <div className="flex flex-1 gap-4">
+     <div className="flex gap-[14px]">
         {/* Product Image */}
-        <div className="flex w-28 shrink-0 items-center justify-center">
+       <div className="flex w-[95px] items-center justify-center">
           <img
             src={product.image}
             alt={product.name}
-            className="max-h-28 max-w-full object-contain"
+          className="h-[110px] w-auto object-contain"
           />
         </div>
 
         {/* Product Information */}
-        <div className="flex min-w-0 flex-1 flex-col">
-          <h3 className="text-base font-semibold text-slate-900">
+       <div className="flex flex-1 flex-col justify-between">
+        <h3 className="text-[16px] font-semibold leading-[20px] text-[#232323]">
             {product.name}
           </h3>
 
           {product.description && (
-            <p className="mt-1 text-xs leading-5 text-slate-600">
+           <p className="mt-1 text-[13px] leading-[18px] text-[#636363]">
               {product.description}
             </p>
           )}
@@ -58,7 +70,7 @@ const ProductCard = ({
           {product.learnMore && (
             <button
               type="button"
-              className="mt-1 w-fit text-xs font-medium text-blue-600 underline"
+              className="mt-1 w-fit text-xs font-medium text-[#2458FF] underline"
             >
               Learn More
             </button>
