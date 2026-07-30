@@ -6,7 +6,14 @@ import ProtectionIcon from "../../assets/icons/protection.png";
 import ArrowDown from "../../assets/icons/arrow-down.png";
 import ArrowUp from "../../assets/icons/arrow-up.png";
 import PlanCard from "../product/PlanCard";
-
+import {
+  loadSelections,
+  saveSelections,
+  loadVariants,
+  saveVariants,
+  loadPlan,
+  savePlan,
+} from "../../utils/storage";
 import productsData from "../../data/products.json";
 import {
   initialActiveVariants,
@@ -26,31 +33,14 @@ import QuantityStepper from "../ui/QuantityStepper";
 
 const BundleBuilder = () => {
 const [selections, setSelections] =
-  useState<BundleSelections>(() => {
-    const saved = localStorage.getItem("bundleSelections");
-
-    return saved
-      ? JSON.parse(saved)
-      : initialSelections;
-  });
+  useState<BundleSelections>(loadSelections);
 
 const [activeVariants, setActiveVariants] =
-  useState<ActiveVariants>(() => {
-    const saved = localStorage.getItem("bundleVariants");
-
-    return saved
-      ? JSON.parse(saved)
-      : initialActiveVariants;
-  });
+  useState<ActiveVariants>(loadVariants);
 
 const [activeStep, setActiveStep] = useState<BundleStep["id"]>("cameras");
 const [selectedPlanId, setSelectedPlanId] =
-  useState<string | null>(() => {
-    return (
-      localStorage.getItem("bundlePlan") ??
-      "cam-unlimited"
-    );
-  });
+  useState<string | null>(loadPlan);
   const steps = productsData.steps as BundleStep[];
 
 const stepIcons = {
@@ -157,26 +147,19 @@ const goToNextStep = () => {
   }
 };
 const currentIndex = stepOrder.indexOf(activeStep);
+
+
 useEffect(() => {
-  localStorage.setItem(
-    "bundleSelections",
-    JSON.stringify(selections)
-  );
-
-  localStorage.setItem(
-    "bundleVariants",
-    JSON.stringify(activeVariants)
-  );
-
-  localStorage.setItem(
-    "bundlePlan",
-    selectedPlanId ?? ""
-  );
-}, [
-  selections,
-  activeVariants,
-  selectedPlanId,
-]);
+  saveSelections(selections);
+}, [selections]);
+useEffect(() => {
+  saveVariants(activeVariants);
+}, [activeVariants]);
+useEffect(() => {
+  if (selectedPlanId) {
+    savePlan(selectedPlanId);
+  }
+}, [selectedPlanId]);
 const nextStep =
   currentIndex < stepOrder.length - 1
     ? steps.find(
