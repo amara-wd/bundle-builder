@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CameraIcon from "../../assets/icons/camera.png";
 import PlanIcon from "../../assets/icons/plan.png";
 import SensorsIcon from "../../assets/icons/sensors.png";
@@ -25,15 +25,32 @@ import ProductCard from "../product/ProductCard";
 import QuantityStepper from "../ui/QuantityStepper";
 
 const BundleBuilder = () => {
-  const [selections, setSelections] =
-    useState<BundleSelections>(initialSelections);
+const [selections, setSelections] =
+  useState<BundleSelections>(() => {
+    const saved = localStorage.getItem("bundleSelections");
 
-  const [activeVariants, setActiveVariants] =
-    useState<ActiveVariants>(initialActiveVariants);
+    return saved
+      ? JSON.parse(saved)
+      : initialSelections;
+  });
 
-  const [activeStep, setActiveStep] = useState("cameras");
+const [activeVariants, setActiveVariants] =
+  useState<ActiveVariants>(() => {
+    const saved = localStorage.getItem("bundleVariants");
+
+    return saved
+      ? JSON.parse(saved)
+      : initialActiveVariants;
+  });
+
+const [activeStep, setActiveStep] = useState<BundleStep["id"]>("cameras");
 const [selectedPlanId, setSelectedPlanId] =
-  useState<string | null>(null);
+  useState<string | null>(() => {
+    return (
+      localStorage.getItem("bundlePlan") ??
+      "cam-unlimited"
+    );
+  });
   const steps = productsData.steps as BundleStep[];
 
 const stepIcons = {
@@ -84,7 +101,35 @@ const stepIcons = {
 
     return productSelections.default ?? 0;
   };
+const hardwareTotal = steps.reduce((total, step) => {
+  if (step.id === "plan") return total;
 
+  return (
+    total +
+    step.products.reduce((stepTotal, product) => {
+      const quantity = getProductQuantity(product);
+
+      return stepTotal + quantity * product.price;
+    }, 0)
+  );
+}, 0);
+
+const compareTotal = steps.reduce((total, step) => {
+  if (step.id === "plan") return total;
+
+  return (
+    total +
+    step.products.reduce((stepTotal, product) => {
+      const quantity = getProductQuantity(product);
+
+      const comparePrice =
+        product.compareAtPrice ?? product.price;
+
+      return stepTotal + quantity * comparePrice;
+    }, 0)
+  );
+}, 0);
+const savings = compareTotal - hardwareTotal;
   const reviewSteps = [
   ...steps.filter(step => step.id !== "plan"),
   ...steps.filter(step => step.id === "plan"),
@@ -96,6 +141,50 @@ const planStep = steps.find(
 const selectedPlan = planStep?.plans.find(
   (plan) => plan.id === selectedPlanId
 );
+const monthlyPlanPrice =
+  selectedPlan?.monthlyPrice ?? 0;
+  const stepOrder: BundleStep["id"][] = [
+  "cameras",
+  "plan",
+  "sensors",
+  "protection",
+];
+const goToNextStep = () => {
+  const currentIndex = stepOrder.indexOf(activeStep);
+
+  if (currentIndex < stepOrder.length - 1) {
+    setActiveStep(stepOrder[currentIndex + 1]);
+  }
+};
+const currentIndex = stepOrder.indexOf(activeStep);
+useEffect(() => {
+  localStorage.setItem(
+    "bundleSelections",
+    JSON.stringify(selections)
+  );
+
+  localStorage.setItem(
+    "bundleVariants",
+    JSON.stringify(activeVariants)
+  );
+
+  localStorage.setItem(
+    "bundlePlan",
+    selectedPlanId ?? ""
+  );
+}, [
+  selections,
+  activeVariants,
+  selectedPlanId,
+]);
+const nextStep =
+  currentIndex < stepOrder.length - 1
+    ? steps.find(
+        (step) =>
+          step.id === stepOrder[currentIndex + 1]
+      )
+    : null;
+    const grandTotal = hardwareTotal + monthlyPlanPrice;
   return (
  <main className="min-h-screen bg-white">
   <div className="mx-auto flex w-full max-w-[1196px] flex-col gap-6 py-[49px] lg:flex-row lg:items-start lg:gap-[29px]">  {/* LEFT - BUILDER */}
@@ -105,7 +194,7 @@ const selectedPlan = planStep?.plans.find(
               
               const isOpen =
                 activeStep === step.id;
-             const selectedCount =
+           const selectedCount =
   step.id === "plan"
     ? selectedPlanId
       ? 1
@@ -130,11 +219,7 @@ isOpen
                   {/* Step Header */}
                   <button
                     type="button"
-                    onClick={() =>
-                      setActiveStep(
-                        isOpen ? "" : step.id
-                      )
-                    }
+                    onClick={() => setActiveStep(step.id)}
                     className="flex w-full items-center justify-between px-5 py-4 text-left"
                   >
                   <div>
@@ -200,28 +285,42 @@ isOpen
         onVariantChange={(variantId) =>
           updateActiveVariant(product.id, variantId)
         }
-        onQuantityChange={(quantity) => {
-          const variantId =
-            product.variants.length > 0
-              ? activeVariants[product.id]
-              : "default";
+       onQuantityChange={(newQuantity) => {
+  const currentVariantId =
+    product.variants.length > 0
+      ? activeVariants[product.id]
+      : "default";
 
-          updateQuantity(
-            product.id,
-            variantId,
-            quantity
-          );
-        }}
+  updateQuantity(
+    product.id,
+    currentVariantId,
+    newQuantity
+  );
+}}
       />
     ))}
   </div>
 )}
     {/* Next Button */}
-    {step.stepNumber < 4 && (
-      <div className="mt-5 flex justify-center">
-        {/* button */}
-      </div>
-    )}
+   <div className="mt-6 flex justify-center">
+  {step.stepNumber < 4 ? (
+    <button
+      type="button"
+      onClick={goToNextStep}
+      className="rounded-lg bg-[#4E2FD2] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#3e22b3]"
+    >
+      Next: {nextStep?.title}
+    </button>
+  ) : (
+    <button
+      type="button"
+      onClick={() => alert("Configuration ready for checkout!")}
+      className="rounded-lg bg-[#4E2FD2] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#3e22b3]"
+    >
+      Checkout
+    </button>
+  )}
+</div>
   </div>
 )}
                 </div>
@@ -280,12 +379,42 @@ isOpen
 }
 const productStep = step as ProductStep;
 
-const selectedProducts = productStep.products.filter(
-  (product) => getProductQuantity(product) > 0
-);
+const reviewItems = productStep.products.flatMap((product) => {
+  // Products with variants
+  if (product.variants.length > 0) {
+    return product.variants
+      .map((variant) => {
+        const quantity =
+          selections[product.id]?.[variant.id] ?? 0;
+
+        return {
+          product,
+          variant,
+          quantity,
+          variantId: variant.id,
+        };
+      })
+      .filter((item) => item.quantity > 0);
+  }
+
+  // Products without variants
+  const quantity =
+    selections[product.id]?.default ?? 0;
+
+  return quantity > 0
+    ? [
+        {
+          product,
+          variant: null,
+          quantity,
+          variantId: "default",
+        },
+      ]
+    : [];
+});
 
 
-  if (selectedProducts.length === 0) {
+ if (reviewItems.length === 0){
     return null;
   }
 
@@ -296,9 +425,12 @@ const selectedProducts = productStep.products.filter(
     </h3>
 
     <div className="space-y-2">
-      {selectedProducts.map((product) => (
+      {reviewItems.map((item) => {
+  const { product, variant, quantity, variantId } = item;
+
+  return (
         <div
-          key={product.id}
+          key={`${product.id}-${variantId}`}
           className="grid grid-cols-[1fr_auto_60px] items-center gap-3"
         >
           <div className="flex min-w-0 items-center gap-2">
@@ -308,39 +440,38 @@ const selectedProducts = productStep.products.filter(
               className="h-10 w-10 rounded bg-white object-contain"
             />
 
-            <span className="truncate text-xs font-medium">
-              {product.name}
-            </span>
+           <div className="min-w-0">
+  <p className="truncate text-xs font-medium">
+    {product.name}
+  </p>
+
+  {variant && (
+    <p className="text-[11px] text-slate-500">
+      {variant.name}
+    </p>
+  )}
+</div>
           </div>
 
           <div className="flex justify-center">
             <QuantityStepper
               size="sm"
-              quantity={getProductQuantity(product)}
-              onDecrease={() => {
-                const variantId =
-                  product.variants.length > 0
-                    ? activeVariants[product.id]
-                    : "default";
+              quantity={quantity}
+             onDecrease={() =>
+  updateQuantity(
+    product.id,
+    variantId,
+    quantity - 1
+  )
+}
 
-                updateQuantity(
-                  product.id,
-                  variantId,
-                  getProductQuantity(product) - 1
-                );
-              }}
-              onIncrease={() => {
-                const variantId =
-                  product.variants.length > 0
-                    ? activeVariants[product.id]
-                    : "default";
-
-                updateQuantity(
-                  product.id,
-                  variantId,
-                  getProductQuantity(product) + 1
-                );
-              }}
+onIncrease={() =>
+  updateQuantity(
+    product.id,
+    variantId,
+    quantity + 1
+  )
+}
             />
           </div>
 
@@ -350,7 +481,7 @@ const selectedProducts = productStep.products.filter(
                 $
                 {(
                   product.compareAtPrice *
-                  getProductQuantity(product)
+                  quantity
                 ).toFixed(2)}
               </p>
             )}
@@ -359,43 +490,58 @@ const selectedProducts = productStep.products.filter(
               $
               {(
                 product.price *
-                getProductQuantity(product)
+                quantity
               ).toFixed(2)}
             </p>
           </div>
         </div>
-      ))}
+      )})}
     </div>
   </div>
 );
 })}
           </div>
 
-          <div className="mt-6 border-t border-blue-200 pt-4">
-            <div className="flex justify-between text-sm">
-              <span>Shipping</span>
-              <span>FREE</span>
-            </div>
+       <div className="mt-6 border-t border-blue-200 pt-4">
 
-            <div className="mt-4 flex justify-between font-semibold">
-              <span>Total</span>
-              <span>$0.00</span>
-            </div>
+  <div className="flex justify-between text-sm">
+    <span>Shipping</span>
+    <span>FREE</span>
+  </div>
 
-            <button
-              type="button"
-              className="mt-5 w-full rounded-md bg-violet-600 py-3 text-sm font-semibold text-white hover:bg-violet-700"
-            >
-              Checkout
-            </button>
+  {selectedPlan && (
+    <div className="mt-3 flex justify-between text-sm">
+      <span>Plan</span>
 
-            <button
-              type="button"
-              className="mt-3 w-full text-xs text-slate-600 underline"
-            >
-              Save my system for later
-            </button>
-          </div>
+      <span className="font-medium text-[#4E2FD2]">
+        ${monthlyPlanPrice.toFixed(2)}/mo
+      </span>
+    </div>
+  )}
+
+  <div className="mt-5 flex justify-between items-end">
+
+    <div>
+      {compareTotal > hardwareTotal && (
+        <p className="text-xs text-[#9A9A9A] line-through">
+          ${compareTotal.toFixed(2)}
+        </p>
+      )}
+
+      <p className="text-xl font-bold">
+  ${grandTotal.toFixed(2)}
+</p>
+    </div>
+
+    {savings > 0 && (
+      <span className="rounded-full bg-[#E7F8ED] px-3 py-1 text-xs font-semibold text-[#15803D]">
+        You save ${savings.toFixed(2)}
+      </span>
+    )}
+
+  </div>
+
+</div>
         </aside>
       </div>
     </main>
