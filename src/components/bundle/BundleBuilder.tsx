@@ -5,6 +5,9 @@ import SensorsIcon from "../../assets/icons/sensors.png";
 import ProtectionIcon from "../../assets/icons/protection.png";
 import ArrowDown from "../../assets/icons/arrow-down.png";
 import ArrowUp from "../../assets/icons/arrow-up.png";
+import PlanLogo from "../../assets/icons/bagde.png";
+import ShippingIcon from "../../assets/icons/shipping.png";
+import GuaranteeBadge from "../../assets/icons/guarantee-badge.png";
 import PlanCard from "../product/PlanCard";
 import {
   loadSelections,
@@ -42,13 +45,15 @@ const [activeStep, setActiveStep] = useState<BundleStep["id"]>("cameras");
 const [selectedPlanId, setSelectedPlanId] =
   useState<string | null>(loadPlan);
   const steps = productsData.steps as BundleStep[];
-
+const [showCheckoutModal, setShowCheckoutModal] =
+  useState(false);
 const stepIcons = {
   cameras: CameraIcon,
   plan: PlanIcon,
   sensors: SensorsIcon,
   protection: ProtectionIcon,
 };
+const [showSaveModal, setShowSaveModal] = useState(false);
 
   const updateQuantity = (
     productId: string,
@@ -297,7 +302,7 @@ isOpen
   ) : (
     <button
       type="button"
-      onClick={() => alert("Configuration ready for checkout!")}
+      onClick={() => setShowCheckoutModal(true)}
       className="rounded-lg bg-[#4E2FD2] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#3e22b3]"
     >
       Checkout
@@ -334,29 +339,37 @@ isOpen
         {step.reviewCategory}
       </h3>
 
-      <div className="flex items-center justify-between rounded-lg bg-white p-3">
-        <div>
-          <p className="text-sm font-semibold">
-            {selectedPlan.name}
-          </p>
+      <div className="flex items-center justify-between rounded-lg p-3">
+  <div className="flex items-center gap-3">
+    <img
+      src={PlanLogo}
+      alt={selectedPlan.name}
+      className=" object-contain"
+    />
 
-          <p className="text-xs text-slate-500">
-            Subscription Plan
-          </p>
-        </div>
+    <div>
+      <p className="text-sm font-semibold text-[#111827]">
+        {selectedPlan.name}
+      </p>
 
-        <div className="text-right">
-          {selectedPlan.compareMonthlyPrice && (
-            <p className="text-[10px] text-[#9A9A9A] line-through">
-              ${selectedPlan.compareMonthlyPrice.toFixed(2)}/mo
-            </p>
-          )}
+      <p className="text-xs text-[#6B7280]">
+        Subscription Plan
+      </p>
+    </div>
+  </div>
 
-          <p className="text-sm font-semibold text-[#4E2FD2]">
-            ${selectedPlan.monthlyPrice.toFixed(2)}/mo
-          </p>
-        </div>
-      </div>
+  <div className="text-right">
+    {selectedPlan.compareMonthlyPrice && (
+      <p className="text-xs text-[#9CA3AF] line-through">
+        ${selectedPlan.compareMonthlyPrice.toFixed(2)}/mo
+      </p>
+    )}
+
+    <p className="text-sm font-semibold text-[#4E2FD2]">
+      ${selectedPlan.monthlyPrice.toFixed(2)}/mo
+    </p>
+  </div>
+</div>
     </div>
   );
 }
@@ -487,22 +500,63 @@ onIncrease={() =>
 
        <div className="mt-6 border-t border-blue-200 pt-4">
 
-  <div className="flex justify-between text-sm">
-    <span>Shipping</span>
-    <span>FREE</span>
+ <div className="flex items-center justify-between text-sm">
+  <div className="flex items-center gap-2">
+    <img
+      src={ShippingIcon}
+      alt="Fast Shipping"
+      className=" object-contain"
+    />
+
+    <span className="font-medium text-[#111827]">
+      Fast Shipping
+    </span>
   </div>
 
-  {selectedPlan && (
-    <div className="mt-3 flex justify-between text-sm">
-      <span>Plan</span>
+  <span className="font-semibold">
+    FREE
+  </span>
+</div>
 
-      <span className="font-medium text-[#4E2FD2]">
-        ${monthlyPlanPrice.toFixed(2)}/mo
-      </span>
-    </div>
-  )}
 
-  <div className="mt-5 flex justify-between items-end">
+  <div className="flex items-start gap-3">
+   
+   <div className="mt-5 flex items-center gap-4">
+  <img
+    src={GuaranteeBadge}
+    alt="30-Day Satisfaction Guarantee"
+    className="h-16 w-16 object-contain"
+  />
+
+  <div>
+    <p className="text-sm font-semibold text-[#111827]">
+      30-Day Satisfaction Guarantee
+    </p>
+
+    <p className="text-xs text-[#6B7280]">
+      Shop with confidence.
+    </p>
+  </div>
+</div>
+  </div>
+
+<div className="mt-4 flex items-center justify-between rounded-xl bg-white px-4 py-3">
+  <div>
+    <p className="text-sm font-medium">
+      Financing Available
+    </p>
+
+    <p className="text-xs text-slate-500">
+      Starting at ${(grandTotal / 12).toFixed(2)}/mo
+    </p>
+  </div>
+
+  <span className="rounded-full bg-[#EDF4FF] px-3 py-1 text-xs font-medium text-[#4E2FD2]">
+    0% APR
+  </span>
+</div>
+ <div className="mt-6 border-t border-[#D8DCE8] pt-5">
+  <div className="flex items-end justify-between">
 
     <div>
       {compareTotal > hardwareTotal && (
@@ -521,12 +575,139 @@ onIncrease={() =>
         You save ${savings.toFixed(2)}
       </span>
     )}
+    
 
   </div>
-
+  <button  onClick={() => setShowCheckoutModal(true)}
+  className="mt-4 w-full rounded-lg bg-[#4E2FD2] py-4 text-lg font-semibold text-white transition hover:bg-[#3e22b3]"
+>
+  Checkout
+</button>
+ {/* <button
+      type="button"
+      onClick={() => setShowCheckoutModal(true)}
+      className="rounded-lg bg-[#4E2FD2] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#3e22b3]"
+    >
+      Checkout
+    </button> */}
+   </div>
+  <button
+  onClick={() => setShowSaveModal(true)}
+  className="mt-4 w-full text-center text-sm font-medium text-[#4E2FD2] hover:underline"
+>
+  Save my system for later
+</button>
 </div>
         </aside>
       </div>
+      {showCheckoutModal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+    <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-100">
+        <span className="text-2xl">✓</span>
+      </div>
+
+      <h2 className="mt-5 text-center text-2xl font-bold text-slate-900">
+        Bundle Ready!
+      </h2>
+
+      <p className="mt-3 text-center text-sm text-slate-600">
+        Your security system has been configured successfully.
+      </p>
+
+      <div className="mt-6 rounded-xl bg-[#EDF4FF] p-4">
+        <div className="flex justify-between">
+          <span className="text-sm text-slate-500">
+            Hardware
+          </span>
+
+          <span className="font-medium">
+            ${hardwareTotal.toFixed(2)}
+          </span>
+        </div>
+
+        {selectedPlan && (
+          <div className="mt-2 flex justify-between">
+            <span className="text-sm text-slate-500">
+              Plan
+            </span>
+
+            <span className="font-medium">
+              ${monthlyPlanPrice.toFixed(2)}/mo
+            </span>
+          </div>
+        )}
+
+        <div className="mt-4 border-t pt-4 flex justify-between font-semibold">
+          <span>Total</span>
+
+          <span>${grandTotal.toFixed(2)}</span>
+        </div>
+      </div>
+
+      <button
+        onClick={() => setShowCheckoutModal(false)}
+        className="mt-6 w-full rounded-xl bg-[#4E2FD2] py-3 font-semibold text-white hover:bg-[#3f25b4]"
+      >
+        Continue
+      </button>
+    </div>
+  </div>
+)}
+{showSaveModal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+    <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-100">
+        <span className="text-2xl text-green-600">✓</span>
+      </div>
+
+      <h2 className="mt-5 text-center text-2xl font-bold">
+        System Saved
+      </h2>
+
+      <p className="mt-2 text-center text-sm text-slate-500">
+        Your security system has been saved on this device.
+        You can come back anytime and continue where you left off.
+      </p>
+
+      <div className="mt-6 rounded-xl bg-[#EDF4FF] p-4 space-y-3">
+
+        <div className="flex justify-between">
+          <span>Hardware</span>
+          <span>${hardwareTotal.toFixed(2)}</span>
+        </div>
+
+        {selectedPlan && (
+          <div className="flex justify-between">
+            <span>{selectedPlan.name}</span>
+            <span>${monthlyPlanPrice.toFixed(2)}/mo</span>
+          </div>
+        )}
+
+        <div className="flex justify-between">
+          <span>Shipping</span>
+          <span>FREE</span>
+        </div>
+
+        <div className="border-t pt-3 flex justify-between font-semibold">
+          <span>Total</span>
+          <span>${grandTotal.toFixed(2)}</span>
+        </div>
+
+      </div>
+
+      <button
+        onClick={() => setShowSaveModal(false)}
+        className="mt-6 w-full rounded-xl bg-[#4E2FD2] py-3 font-semibold text-white hover:bg-[#3f25b4]"
+      >
+        Continue Shopping
+      </button>
+
+    </div>
+  </div>
+)}
     </main>
   );
 };
