@@ -17,6 +17,7 @@ import type {
   Product,
 } from "../../types/bundle";
 import ProductCard from "../product/ProductCard";
+import QuantityStepper from "../ui/QuantityStepper";
 
 const BundleBuilder = () => {
   const [selections, setSelections] =
@@ -78,12 +79,17 @@ const stepIcons = {
     return productSelections.default ?? 0;
   };
 
+  const reviewSteps = [
+  ...steps.filter(step => step.id !== "plan"),
+  ...steps.filter(step => step.id === "plan"),
+];
   return (
  <main className="min-h-screen bg-white">
   <div className="mx-auto flex w-full max-w-[1196px] flex-col gap-6 py-[49px] lg:flex-row lg:items-start lg:gap-[29px]">  {/* LEFT - BUILDER */}
 <section className="w-full lg:w-[768px]">
          <div className="flex flex-col gap-[13px]">
             {steps.map((step) => {
+              
               const isOpen =
                 activeStep === step.id;
                 const selectedCount = step.products.filter(
@@ -207,12 +213,11 @@ isOpen
           </h2>
 
           <p className="mt-2 text-sm text-slate-600">
-            Review your personalized protection
-            system.
+           Review your personalized protection system designed to keep what matters most safe.
           </p>
 
           <div className="mt-6 space-y-4">
-            {steps.map((step) => {
+           {reviewSteps.map((step) => {
               const selectedProducts =
                 step.products.filter(
                   (product) =>
@@ -231,10 +236,11 @@ isOpen
 
                   <div className="space-y-2">
                     {selectedProducts.map(
+                      
                       (product) => (
                         <div
                           key={product.id}
-                          className="flex items-center justify-between gap-3"
+                            className="grid grid-cols-[1fr_auto_56px] items-center gap-3"
                         >
                           <div className="flex min-w-0 items-center gap-2">
                             <img
@@ -247,23 +253,58 @@ isOpen
                               {product.name}
                             </span>
                           </div>
+<div className="flex justify-center">
+                         {product.category !== "plan" && (
+  <QuantityStepper
+    size="sm"
+    quantity={getProductQuantity(product)}
+    onDecrease={() => {
+      const variantId =
+        product.variants.length > 0
+          ? activeVariants[product.id]
+          : "default";
 
-                          <span className="text-xs">
-                            ×{" "}
-                            {getProductQuantity(
-                              product
-                            )}
-                          </span>
+      updateQuantity(
+        product.id,
+        variantId,
+        getProductQuantity(product) - 1
+      );
+    }}
+    
+    onIncrease={() => {
+      const variantId =
+        product.variants.length > 0
+          ? activeVariants[product.id]
+          : "default";
 
-                          <span className="text-xs font-medium">
-                            $
-                            {(
-                              product.price *
-                              getProductQuantity(
-                                product
-                              )
-                            ).toFixed(2)}
-                          </span>
+      updateQuantity(
+        product.id,
+        variantId,
+        getProductQuantity(product) + 1
+      );
+    }}
+  />
+)}
+</div>
+                         <div className="w-[60px] text-right">
+  {product.compareAtPrice && (
+    <p className="text-[10px] leading-none text-[#9A9A9A] line-through">
+      $
+      {(
+        product.compareAtPrice *
+        getProductQuantity(product)
+      ).toFixed(2)}
+    </p>
+  )}
+
+  <p className="mt-[2px] text-[12px] font-semibold leading-none text-[#4E2FD2]">
+    $
+    {(
+      product.price *
+      getProductQuantity(product)
+    ).toFixed(2)}
+  </p>
+</div>
                         </div>
                       )
                     )}

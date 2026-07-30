@@ -110,6 +110,7 @@ text-white"
           <div className="mt-auto flex items-end justify-between gap-4 pt-3">
             {/* Quantity */}
             <QuantityStepper
+            size="sm"
               quantity={quantity}
               onDecrease={() =>
                 onQuantityChange(quantity - 1)
