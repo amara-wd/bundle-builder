@@ -113,26 +113,52 @@
         }
       ]
     },
+   {
+  "id": "plan",
+  "stepNumber": 2,
+  "title": "Choose your plan",
+  "reviewCategory": "Plan",
+  "plans": [
     {
-      "id": "plan",
-      "stepNumber": 2,
-      "title": "Choose your plan",
-      "reviewCategory": "Plan",
-      "products": [
-        {
-          "id": "cam-unlimited",
-          "category": "plan",
-          "name": "Cam Unlimited",
-          "description": "Unlimited cloud recording and advanced security features for your cameras.",
-          "image": "/images/cam-unlimited.png",
-          "price": 99.0,
-          "compareAtPrice": 120.0,
-          "billingPeriod": "year",
-          "learnMore": true,
-          "variants": []
-        }
+      "id": "basic",
+      "name": "Basic",
+      "description": "Great for one or two cameras.",
+      "monthlyPrice": 4.99,
+      "compareMonthlyPrice": 7.99,
+      "badge": "",
+      "features": [
+        "7-day cloud history",
+        "Motion alerts"
       ]
     },
+    {
+      "id": "plus",
+      "name": "Plus",
+      "description": "Perfect for most homes.",
+      "monthlyPrice": 9.99,
+      "compareMonthlyPrice": 12.99,
+      "badge": "Recommended",
+      "features": [
+        "Unlimited history",
+        "AI Detection",
+        "Person Detection"
+      ]
+    },
+    {
+      "id": "pro",
+      "name": "Pro",
+      "description": "Complete protection.",
+      "monthlyPrice": 14.99,
+      "compareMonthlyPrice": 19.99,
+      "badge": "Best Value",
+      "features": [
+        "Everything in Plus",
+        "Emergency Dispatch",
+        "Priority Support"
+      ]
+    }
+  ]
+},
     {
       "id": "sensors",
       "stepNumber": 3,

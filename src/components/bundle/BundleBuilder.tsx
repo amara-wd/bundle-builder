@@ -5,6 +5,7 @@ import SensorsIcon from "../../assets/icons/sensors.png";
 import ProtectionIcon from "../../assets/icons/protection.png";
 import ArrowDown from "../../assets/icons/arrow-down.png";
 import ArrowUp from "../../assets/icons/arrow-up.png";
+import PlanCard from "../product/PlanCard";
 
 import productsData from "../../data/products.json";
 import {
@@ -15,6 +16,10 @@ import type {
   ActiveVariants,
   BundleSelections,
   Product,
+  BundleStep,
+  ProductStep,
+  PlanStep,
+  Plan,
 } from "../../types/bundle";
 import ProductCard from "../product/ProductCard";
 import QuantityStepper from "../ui/QuantityStepper";
@@ -27,8 +32,9 @@ const BundleBuilder = () => {
     useState<ActiveVariants>(initialActiveVariants);
 
   const [activeStep, setActiveStep] = useState("cameras");
-
-  const steps = productsData.steps;
+const [selectedPlanId, setSelectedPlanId] =
+  useState<string | null>(null);
+  const steps = productsData.steps as BundleStep[];
 
 const stepIcons = {
   cameras: CameraIcon,
@@ -83,6 +89,13 @@ const stepIcons = {
   ...steps.filter(step => step.id !== "plan"),
   ...steps.filter(step => step.id === "plan"),
 ];
+const planStep = steps.find(
+  (step): step is PlanStep => step.id === "plan"
+);
+
+const selectedPlan = planStep?.plans.find(
+  (plan) => plan.id === selectedPlanId
+);
   return (
  <main className="min-h-screen bg-white">
   <div className="mx-auto flex w-full max-w-[1196px] flex-col gap-6 py-[49px] lg:flex-row lg:items-start lg:gap-[29px]">  {/* LEFT - BUILDER */}
@@ -92,9 +105,14 @@ const stepIcons = {
               
               const isOpen =
                 activeStep === step.id;
-                const selectedCount = step.products.filter(
-  (product) => getProductQuantity(product) > 0
-).length;
+             const selectedCount =
+  step.id === "plan"
+    ? selectedPlanId
+      ? 1
+      : 0
+    : step.products.filter(
+        (product) => getProductQuantity(product) > 0
+      ).length;
 const Icon =
   stepIcons[step.id as keyof typeof stepIcons];
               return (
@@ -160,38 +178,44 @@ isOpen
                   {/* Step Content */}
                   {isOpen && (
   <div className="border-t border-slate-200 bg-slate-100 p-4">
-    {step.products.length > 0 ? (
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {step.products.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            activeVariant={activeVariants[product.id]}
-            quantity={getProductQuantity(product)}
-            onVariantChange={(variantId) =>
-              updateActiveVariant(product.id, variantId)
-            }
-            onQuantityChange={(quantity) => {
-              const variantId =
-                product.variants.length > 0
-                  ? activeVariants[product.id]
-                  : "default";
+    {step.id === "plan" ? (
+  <div className="grid gap-4">
+  {(step as PlanStep).plans.map((plan) => (
+    <PlanCard
+      key={plan.id}
+      plan={plan}
+      selected={selectedPlanId === plan.id}
+      onSelect={() => setSelectedPlanId(plan.id)}
+    />
+  ))}
+</div>
+) : (
+  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+    {step.products.map((product) => (
+      <ProductCard
+        key={product.id}
+        product={product}
+        activeVariant={activeVariants[product.id]}
+        quantity={getProductQuantity(product)}
+        onVariantChange={(variantId) =>
+          updateActiveVariant(product.id, variantId)
+        }
+        onQuantityChange={(quantity) => {
+          const variantId =
+            product.variants.length > 0
+              ? activeVariants[product.id]
+              : "default";
 
-              updateQuantity(
-                product.id,
-                variantId,
-                quantity
-              );
-            }}
-          />
-        ))}
-      </div>
-    ) : (
-      <p className="py-8 text-center text-sm text-slate-500">
-        No products available.
-      </p>
-    )}
-
+          updateQuantity(
+            product.id,
+            variantId,
+            quantity
+          );
+        }}
+      />
+    ))}
+  </div>
+)}
     {/* Next Button */}
     {step.stepNumber < 4 && (
       <div className="mt-5 flex justify-center">
@@ -217,101 +241,134 @@ isOpen
           </p>
 
           <div className="mt-6 space-y-4">
-           {reviewSteps.map((step) => {
-              const selectedProducts =
-                step.products.filter(
-                  (product) =>
-                    getProductQuantity(product) > 0
+          {reviewSteps.map((step) => {
+
+  if (step.id === "plan") {
+  if (!selectedPlan) return null;
+
+  return (
+    <div key={step.id}>
+      <h3 className="mb-2 text-xs font-medium uppercase text-slate-400">
+        {step.reviewCategory}
+      </h3>
+
+      <div className="flex items-center justify-between rounded-lg bg-white p-3">
+        <div>
+          <p className="text-sm font-semibold">
+            {selectedPlan.name}
+          </p>
+
+          <p className="text-xs text-slate-500">
+            Subscription Plan
+          </p>
+        </div>
+
+        <div className="text-right">
+          {selectedPlan.compareMonthlyPrice && (
+            <p className="text-[10px] text-[#9A9A9A] line-through">
+              ${selectedPlan.compareMonthlyPrice.toFixed(2)}/mo
+            </p>
+          )}
+
+          <p className="text-sm font-semibold text-[#4E2FD2]">
+            ${selectedPlan.monthlyPrice.toFixed(2)}/mo
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+const productStep = step as ProductStep;
+
+const selectedProducts = productStep.products.filter(
+  (product) => getProductQuantity(product) > 0
+);
+
+
+  if (selectedProducts.length === 0) {
+    return null;
+  }
+
+ return (
+  <div key={step.id}>
+    <h3 className="mb-2 text-xs font-medium uppercase text-slate-400">
+      {step.reviewCategory}
+    </h3>
+
+    <div className="space-y-2">
+      {selectedProducts.map((product) => (
+        <div
+          key={product.id}
+          className="grid grid-cols-[1fr_auto_60px] items-center gap-3"
+        >
+          <div className="flex min-w-0 items-center gap-2">
+            <img
+              src={product.image}
+              alt=""
+              className="h-10 w-10 rounded bg-white object-contain"
+            />
+
+            <span className="truncate text-xs font-medium">
+              {product.name}
+            </span>
+          </div>
+
+          <div className="flex justify-center">
+            <QuantityStepper
+              size="sm"
+              quantity={getProductQuantity(product)}
+              onDecrease={() => {
+                const variantId =
+                  product.variants.length > 0
+                    ? activeVariants[product.id]
+                    : "default";
+
+                updateQuantity(
+                  product.id,
+                  variantId,
+                  getProductQuantity(product) - 1
                 );
+              }}
+              onIncrease={() => {
+                const variantId =
+                  product.variants.length > 0
+                    ? activeVariants[product.id]
+                    : "default";
 
-              if (selectedProducts.length === 0) {
-                return null;
-              }
+                updateQuantity(
+                  product.id,
+                  variantId,
+                  getProductQuantity(product) + 1
+                );
+              }}
+            />
+          </div>
 
-              return (
-                <div key={step.id}>
-                  <h3 className="mb-2 text-xs font-medium uppercase text-slate-400">
-                    {step.reviewCategory}
-                  </h3>
+          <div className="w-[60px] text-right">
+            {product.compareAtPrice && (
+              <p className="text-[10px] text-[#9A9A9A] line-through">
+                $
+                {(
+                  product.compareAtPrice *
+                  getProductQuantity(product)
+                ).toFixed(2)}
+              </p>
+            )}
 
-                  <div className="space-y-2">
-                    {selectedProducts.map(
-                      
-                      (product) => (
-                        <div
-                          key={product.id}
-                            className="grid grid-cols-[1fr_auto_56px] items-center gap-3"
-                        >
-                          <div className="flex min-w-0 items-center gap-2">
-                            <img
-                              src={product.image}
-                              alt=""
-                              className="h-10 w-10 rounded bg-white object-contain"
-                            />
-
-                            <span className="truncate text-xs font-medium">
-                              {product.name}
-                            </span>
-                          </div>
-<div className="flex justify-center">
-                         {product.category !== "plan" && (
-  <QuantityStepper
-    size="sm"
-    quantity={getProductQuantity(product)}
-    onDecrease={() => {
-      const variantId =
-        product.variants.length > 0
-          ? activeVariants[product.id]
-          : "default";
-
-      updateQuantity(
-        product.id,
-        variantId,
-        getProductQuantity(product) - 1
-      );
-    }}
-    
-    onIncrease={() => {
-      const variantId =
-        product.variants.length > 0
-          ? activeVariants[product.id]
-          : "default";
-
-      updateQuantity(
-        product.id,
-        variantId,
-        getProductQuantity(product) + 1
-      );
-    }}
-  />
-)}
-</div>
-                         <div className="w-[60px] text-right">
-  {product.compareAtPrice && (
-    <p className="text-[10px] leading-none text-[#9A9A9A] line-through">
-      $
-      {(
-        product.compareAtPrice *
-        getProductQuantity(product)
-      ).toFixed(2)}
-    </p>
-  )}
-
-  <p className="mt-[2px] text-[12px] font-semibold leading-none text-[#4E2FD2]">
-    $
-    {(
-      product.price *
-      getProductQuantity(product)
-    ).toFixed(2)}
-  </p>
-</div>
-                        </div>
-                      )
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+            <p className="text-[12px] font-semibold text-[#4E2FD2]">
+              $
+              {(
+                product.price *
+                getProductQuantity(product)
+              ).toFixed(2)}
+            </p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+})}
           </div>
 
           <div className="mt-6 border-t border-blue-200 pt-4">
