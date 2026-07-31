@@ -5,10 +5,17 @@ import SensorsIcon from "../../assets/icons/sensors.png";
 import ProtectionIcon from "../../assets/icons/protection.png";
 import ArrowDown from "../../assets/icons/arrow-down.png";
 import ArrowUp from "../../assets/icons/arrow-up.png";
-import PlanLogo from "../../assets/icons/bagde.png";
-import ShippingIcon from "../../assets/icons/shipping.png";
-import GuaranteeBadge from "../../assets/icons/guarantee-badge.png";
 import PlanCard from "../product/PlanCard";
+import CheckoutModal from "../modal/CheckoutModal";
+import SaveModal from "../modal/SaveModal";
+import {
+  getProductQuantity,
+  getHardwareTotal,
+  getCompareTotal,
+  getSavings,
+  getGrandTotal,
+  getMonthlyPlanPrice,
+} from "../../utils/bundleCalculations";
 import {
   loadSelections,
   saveSelections,
@@ -18,21 +25,14 @@ import {
   savePlan,
 } from "../../utils/storage";
 import productsData from "../../data/products.json";
-import {
-  initialActiveVariants,
-  initialSelections,
-} from "../../data/initialState";
 import type {
   ActiveVariants,
   BundleSelections,
-  Product,
   BundleStep,
-  ProductStep,
   PlanStep,
-  Plan,
 } from "../../types/bundle";
 import ProductCard from "../product/ProductCard";
-import QuantityStepper from "../ui/QuantityStepper";
+import ReviewPanel from "../review/ReviewPanel";
 
 const BundleBuilder = () => {
 const [selections, setSelections] =
@@ -80,51 +80,22 @@ const [showSaveModal, setShowSaveModal] = useState(false);
     }));
   };
 
-  const getProductQuantity = (product: Product) => {
-    const productSelections = selections[product.id];
+ 
+const hardwareTotal = getHardwareTotal(
+  steps,
+  selections,
+  activeVariants
+);
 
-    if (!productSelections) {
-      return 0;
-    }
-
-    if (product.variants.length > 0) {
-      const activeVariant =
-        activeVariants[product.id];
-
-      return productSelections[activeVariant] ?? 0;
-    }
-
-    return productSelections.default ?? 0;
-  };
-const hardwareTotal = steps.reduce((total, step) => {
-  if (step.id === "plan") return total;
-
-  return (
-    total +
-    step.products.reduce((stepTotal, product) => {
-      const quantity = getProductQuantity(product);
-
-      return stepTotal + quantity * product.price;
-    }, 0)
-  );
-}, 0);
-
-const compareTotal = steps.reduce((total, step) => {
-  if (step.id === "plan") return total;
-
-  return (
-    total +
-    step.products.reduce((stepTotal, product) => {
-      const quantity = getProductQuantity(product);
-
-      const comparePrice =
-        product.compareAtPrice ?? product.price;
-
-      return stepTotal + quantity * comparePrice;
-    }, 0)
-  );
-}, 0);
-const savings = compareTotal - hardwareTotal;
+const compareTotal = getCompareTotal(
+  steps,
+  selections,
+  activeVariants
+);
+const savings = getSavings(
+  compareTotal,
+  hardwareTotal
+);
   const reviewSteps = [
   ...steps.filter(step => step.id !== "plan"),
   ...steps.filter(step => step.id === "plan"),
@@ -137,7 +108,7 @@ const selectedPlan = planStep?.plans.find(
   (plan) => plan.id === selectedPlanId
 );
 const monthlyPlanPrice =
-  selectedPlan?.monthlyPrice ?? 0;
+  getMonthlyPlanPrice(selectedPlan);
   const stepOrder: BundleStep["id"][] = [
   "cameras",
   "plan",
@@ -172,12 +143,15 @@ const nextStep =
           step.id === stepOrder[currentIndex + 1]
       )
     : null;
-    const grandTotal = hardwareTotal + monthlyPlanPrice;
+    const grandTotal = getGrandTotal(
+  hardwareTotal,
+  monthlyPlanPrice
+);
   return (
  <main className="min-h-screen bg-white">
-  <div className="mx-auto flex w-full max-w-[1196px] flex-col gap-6 py-[49px] lg:flex-row lg:items-start lg:gap-[29px]">  {/* LEFT - BUILDER */}
-<section className="w-full lg:w-[768px]">
-         <div className="flex flex-col gap-[13px]">
+  <div className="mx-auto flex w-full max-w-299 flex-col gap-6 py-12.25 lg:flex-row lg:items-start lg:gap-7.25">  {/* LEFT - BUILDER */}
+<section className="w-full lg:w-3xl">
+         <div className="flex flex-col gap-3.25">
             {steps.map((step) => {
               
               const isOpen =
@@ -188,7 +162,11 @@ const nextStep =
       ? 1
       : 0
     : step.products.filter(
-        (product) => getProductQuantity(product) > 0
+        (product) => getProductQuantity(
+  product,
+  selections,
+  activeVariants
+) > 0
       ).length;
 const Icon =
   stepIcons[step.id as keyof typeof stepIcons];
@@ -269,7 +247,11 @@ isOpen
         key={product.id}
         product={product}
         activeVariant={activeVariants[product.id]}
-        quantity={getProductQuantity(product)}
+        quantity={getProductQuantity(
+  product,
+  selections,
+  activeVariants
+)}
         onVariantChange={(variantId) =>
           updateActiveVariant(product.id, variantId)
         }
@@ -318,396 +300,38 @@ isOpen
         </section>
 
         {/* RIGHT - REVIEW */}
-      <aside className="w-full rounded-[10px] bg-[#EDF4FF] px-5 py-[15px] lg:w-[399px]">
-          <h2 className="text-xl font-semibold text-slate-900">
-            Your security system
-          </h2>
-
-          <p className="mt-2 text-sm text-slate-600">
-           Review your personalized protection system designed to keep what matters most safe.
-          </p>
-
-          <div className="mt-6 space-y-4">
-          {reviewSteps.map((step) => {
-
-  if (step.id === "plan") {
-  if (!selectedPlan) return null;
-
-  return (
-    <div key={step.id}>
-      <h3 className="mb-2 text-xs font-medium uppercase text-slate-400">
-        {step.reviewCategory}
-      </h3>
-
-      <div className="flex items-center justify-between rounded-lg p-3">
-  <div className="flex items-center gap-3">
-    <img
-      src={PlanLogo}
-      alt={selectedPlan.name}
-      className=" object-contain"
-    />
-
-    <div>
-      <p className="text-sm font-semibold text-[#111827]">
-        {selectedPlan.name}
-      </p>
-
-      <p className="text-xs text-[#6B7280]">
-        Subscription Plan
-      </p>
-    </div>
-  </div>
-
-  <div className="text-right">
-    {selectedPlan.compareMonthlyPrice && (
-      <p className="text-xs text-[#9CA3AF] line-through">
-        ${selectedPlan.compareMonthlyPrice.toFixed(2)}/mo
-      </p>
-    )}
-
-    <p className="text-sm font-semibold text-[#4E2FD2]">
-      ${selectedPlan.monthlyPrice.toFixed(2)}/mo
-    </p>
-  </div>
-</div>
-    </div>
-  );
-}
-const productStep = step as ProductStep;
-
-const reviewItems = productStep.products.flatMap((product) => {
-  // Products with variants
-  if (product.variants.length > 0) {
-    return product.variants
-      .map((variant) => {
-        const quantity =
-          selections[product.id]?.[variant.id] ?? 0;
-
-        return {
-          product,
-          variant,
-          quantity,
-          variantId: variant.id,
-        };
-      })
-      .filter((item) => item.quantity > 0);
-  }
-
-  // Products without variants
-  const quantity =
-    selections[product.id]?.default ?? 0;
-
-  return quantity > 0
-    ? [
-        {
-          product,
-          variant: null,
-          quantity,
-          variantId: "default",
-        },
-      ]
-    : [];
-});
-
-
- if (reviewItems.length === 0){
-    return null;
-  }
-
- return (
-  <div key={step.id}>
-    <h3 className="mb-2 text-xs font-medium uppercase text-slate-400">
-      {step.reviewCategory}
-    </h3>
-
-    <div className="space-y-2">
-      {reviewItems.map((item) => {
-  const { product, variant, quantity, variantId } = item;
-
-  return (
-        <div
-          key={`${product.id}-${variantId}`}
-          className="grid grid-cols-[1fr_auto_60px] items-center gap-3"
-        >
-          <div className="flex min-w-0 items-center gap-2">
-            <img
-              src={product.image}
-              alt=""
-              className="h-10 w-10 rounded bg-white object-contain"
-            />
-
-           <div className="min-w-0">
-  <p className="truncate text-xs font-medium">
-    {product.name}
-  </p>
-
-  {variant && (
-    <p className="text-[11px] text-slate-500">
-      {variant.name}
-    </p>
-  )}
-</div>
-          </div>
-
-          <div className="flex justify-center">
-            <QuantityStepper
-              size="sm"
-              quantity={quantity}
-             onDecrease={() =>
-  updateQuantity(
-    product.id,
-    variantId,
-    quantity - 1
-  )
-}
-
-onIncrease={() =>
-  updateQuantity(
-    product.id,
-    variantId,
-    quantity + 1
-  )
-}
-            />
-          </div>
-
-          <div className="w-[60px] text-right">
-            {product.compareAtPrice && (
-              <p className="text-[10px] text-[#9A9A9A] line-through">
-                $
-                {(
-                  product.compareAtPrice *
-                  quantity
-                ).toFixed(2)}
-              </p>
-            )}
-
-            <p className="text-[12px] font-semibold text-[#4E2FD2]">
-              $
-              {(
-                product.price *
-                quantity
-              ).toFixed(2)}
-            </p>
-          </div>
-        </div>
-      )})}
-    </div>
-  </div>
-);
-})}
-          </div>
-
-       <div className="mt-6 border-t border-blue-200 pt-4">
-
- <div className="flex items-center justify-between text-sm">
-  <div className="flex items-center gap-2">
-    <img
-      src={ShippingIcon}
-      alt="Fast Shipping"
-      className=" object-contain"
-    />
-
-    <span className="font-medium text-[#111827]">
-      Fast Shipping
-    </span>
-  </div>
-
-  <span className="font-semibold">
-    FREE
-  </span>
-</div>
-
-
-  <div className="flex items-start gap-3">
-   
-   <div className="mt-5 flex items-center gap-4">
-  <img
-    src={GuaranteeBadge}
-    alt="30-Day Satisfaction Guarantee"
-    className="h-16 w-16 object-contain"
-  />
-
-  <div>
-    <p className="text-sm font-semibold text-[#111827]">
-      30-Day Satisfaction Guarantee
-    </p>
-
-    <p className="text-xs text-[#6B7280]">
-      Shop with confidence.
-    </p>
-  </div>
-</div>
-  </div>
-
-<div className="mt-4 flex items-center justify-between rounded-xl bg-white px-4 py-3">
-  <div>
-    <p className="text-sm font-medium">
-      Financing Available
-    </p>
-
-    <p className="text-xs text-slate-500">
-      Starting at ${(grandTotal / 12).toFixed(2)}/mo
-    </p>
-  </div>
-
-  <span className="rounded-full bg-[#EDF4FF] px-3 py-1 text-xs font-medium text-[#4E2FD2]">
-    0% APR
-  </span>
-</div>
- <div className="mt-6 border-t border-[#D8DCE8] pt-5">
-  <div className="flex items-end justify-between">
-
-    <div>
-      {compareTotal > hardwareTotal && (
-        <p className="text-xs text-[#9A9A9A] line-through">
-          ${compareTotal.toFixed(2)}
-        </p>
-      )}
-
-      <p className="text-xl font-bold">
-  ${grandTotal.toFixed(2)}
-</p>
-    </div>
-
-    {savings > 0 && (
-      <span className="rounded-full bg-[#E7F8ED] px-3 py-1 text-xs font-semibold text-[#15803D]">
-        You save ${savings.toFixed(2)}
-      </span>
-    )}
-    
-
-  </div>
-  <button  onClick={() => setShowCheckoutModal(true)}
-  className="mt-4 w-full rounded-lg bg-[#4E2FD2] py-4 text-lg font-semibold text-white transition hover:bg-[#3e22b3]"
->
-  Checkout
-</button>
- {/* <button
-      type="button"
-      onClick={() => setShowCheckoutModal(true)}
-      className="rounded-lg bg-[#4E2FD2] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#3e22b3]"
-    >
-      Checkout
-    </button> */}
-   </div>
-  <button
-  onClick={() => setShowSaveModal(true)}
-  className="mt-4 w-full text-center text-sm font-medium text-[#4E2FD2] hover:underline"
->
-  Save my system for later
-</button>
-</div>
-        </aside>
+  <ReviewPanel
+  reviewSteps={reviewSteps}
+  selections={selections}
+  activeVariants={activeVariants}
+  selectedPlan={selectedPlan}
+  hardwareTotal={hardwareTotal}
+  compareTotal={compareTotal}
+  savings={savings}
+  grandTotal={grandTotal}
+  monthlyPlanPrice={monthlyPlanPrice}
+  updateQuantity={updateQuantity}
+  onCheckout={() => setShowCheckoutModal(true)}
+  onSave={() => setShowSaveModal(true)}
+/>
       </div>
-      {showCheckoutModal && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-    <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+     <CheckoutModal
+  open={showCheckoutModal}
+  onClose={() => setShowCheckoutModal(false)}
+  hardwareTotal={hardwareTotal}
+  grandTotal={grandTotal}
+  monthlyPlanPrice={monthlyPlanPrice}
+  selectedPlan={selectedPlan}
+/>
 
-      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-100">
-        <span className="text-2xl">✓</span>
-      </div>
-
-      <h2 className="mt-5 text-center text-2xl font-bold text-slate-900">
-        Bundle Ready!
-      </h2>
-
-      <p className="mt-3 text-center text-sm text-slate-600">
-        Your security system has been configured successfully.
-      </p>
-
-      <div className="mt-6 rounded-xl bg-[#EDF4FF] p-4">
-        <div className="flex justify-between">
-          <span className="text-sm text-slate-500">
-            Hardware
-          </span>
-
-          <span className="font-medium">
-            ${hardwareTotal.toFixed(2)}
-          </span>
-        </div>
-
-        {selectedPlan && (
-          <div className="mt-2 flex justify-between">
-            <span className="text-sm text-slate-500">
-              Plan
-            </span>
-
-            <span className="font-medium">
-              ${monthlyPlanPrice.toFixed(2)}/mo
-            </span>
-          </div>
-        )}
-
-        <div className="mt-4 border-t pt-4 flex justify-between font-semibold">
-          <span>Total</span>
-
-          <span>${grandTotal.toFixed(2)}</span>
-        </div>
-      </div>
-
-      <button
-        onClick={() => setShowCheckoutModal(false)}
-        className="mt-6 w-full rounded-xl bg-[#4E2FD2] py-3 font-semibold text-white hover:bg-[#3f25b4]"
-      >
-        Continue
-      </button>
-    </div>
-  </div>
-)}
-{showSaveModal && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-    <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-
-      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-100">
-        <span className="text-2xl text-green-600">✓</span>
-      </div>
-
-      <h2 className="mt-5 text-center text-2xl font-bold">
-        System Saved
-      </h2>
-
-      <p className="mt-2 text-center text-sm text-slate-500">
-        Your security system has been saved on this device.
-        You can come back anytime and continue where you left off.
-      </p>
-
-      <div className="mt-6 rounded-xl bg-[#EDF4FF] p-4 space-y-3">
-
-        <div className="flex justify-between">
-          <span>Hardware</span>
-          <span>${hardwareTotal.toFixed(2)}</span>
-        </div>
-
-        {selectedPlan && (
-          <div className="flex justify-between">
-            <span>{selectedPlan.name}</span>
-            <span>${monthlyPlanPrice.toFixed(2)}/mo</span>
-          </div>
-        )}
-
-        <div className="flex justify-between">
-          <span>Shipping</span>
-          <span>FREE</span>
-        </div>
-
-        <div className="border-t pt-3 flex justify-between font-semibold">
-          <span>Total</span>
-          <span>${grandTotal.toFixed(2)}</span>
-        </div>
-
-      </div>
-
-      <button
-        onClick={() => setShowSaveModal(false)}
-        className="mt-6 w-full rounded-xl bg-[#4E2FD2] py-3 font-semibold text-white hover:bg-[#3f25b4]"
-      >
-        Continue Shopping
-      </button>
-
-    </div>
-  </div>
-)}
+<SaveModal
+  open={showSaveModal}
+  onClose={() => setShowSaveModal(false)}
+  hardwareTotal={hardwareTotal}
+  grandTotal={grandTotal}
+  monthlyPlanPrice={monthlyPlanPrice}
+  selectedPlan={selectedPlan}
+/>
     </main>
   );
 };
