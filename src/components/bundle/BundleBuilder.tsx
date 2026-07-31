@@ -129,11 +129,7 @@ isOpen
                   {/* Step Header */}
                   <button
                     type="button"
-                   onClick={() =>
-  setActiveStep((currentStep) =>
-    currentStep === step.id ? null : step.id
-  )
-}
+          onClick={() => setActiveStep(step.id)}
 
                     className="flex w-full items-center justify-between px-5 py-4 text-left"
                   >

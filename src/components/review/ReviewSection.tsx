@@ -3,9 +3,10 @@ import type {
   BundleSelections,
   BundleStep,
   Plan,
+  ProductStep,
+  ProductVariant,
 } from "../../types/bundle";
  import PlanLogo from "../../assets/icons/bagde.png";
-import type { ProductStep } from "../../types/bundle";
 import ReviewItem from "./ReviewItem";
 interface ReviewSectionProps {
   step: BundleStep;
@@ -18,7 +19,12 @@ interface ReviewSectionProps {
     quantity: number
   ) => void;
 }
-
+type ReviewItemData = {
+  product: ProductStep["products"][number];
+  variant: ProductVariant | null;
+  quantity: number;
+  variantId: string;
+};
 const ReviewSection = ({
   step,
   selections,
@@ -66,7 +72,8 @@ const ReviewSection = ({
 }
 const productStep = step as ProductStep;
 
-const reviewItems = productStep.products.flatMap((product) => {
+const reviewItems: ReviewItemData[] =
+  productStep.products.flatMap<ReviewItemData>((product) => {
   // Products with variants
   if (product.variants.length > 0) {
     return product.variants
