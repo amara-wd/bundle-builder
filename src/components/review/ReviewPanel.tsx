@@ -49,9 +49,9 @@ const ReviewPanel = ({
     
   return (
   <aside className="w-full rounded-[10px] bg-[#EDF4FF] px-5 py-3.75 lg:w-99.75">
-     <h2 className="text-xl text-slate-600">
+     {/* <h2 className="text-xl text-slate-600">
             Review
-          </h2>
+          </h2> */}
 
           <h2 className="text-xl font-semibold text-slate-900">
             Your security system

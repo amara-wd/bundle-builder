@@ -55,7 +55,7 @@ const stepIcons = {
   ...steps.filter(step => step.id === "plan"),
 ];
 const [activeStep, setActiveStep] =
-  useState<BundleStep["id"]>("cameras");
+  useState<BundleStep["id"] | null>("cameras");
 
 const [showCheckoutModal, setShowCheckoutModal] =
   useState(false);
@@ -70,16 +70,22 @@ const stepOrder: BundleStep["id"][] = [
 ];
 
 const goToNextStep = () => {
+  if (activeStep === null) return;
+
   const currentIndex = stepOrder.indexOf(activeStep);
 
   if (currentIndex < stepOrder.length - 1) {
     setActiveStep(stepOrder[currentIndex + 1]);
   }
 };
-const currentIndex = stepOrder.indexOf(activeStep);
+const currentIndex =
+  activeStep !== null
+    ? stepOrder.indexOf(activeStep)
+    : -1;
 
 
 const nextStep =
+  currentIndex >= 0 &&
   currentIndex < stepOrder.length - 1
     ? steps.find(
         (step) =>
@@ -129,7 +135,11 @@ isOpen
                   {/* Step Header */}
                   <button
                     type="button"
-          onClick={() => setActiveStep(step.id)}
+       onClick={() =>
+  setActiveStep((currentStep) =>
+    currentStep === step.id ? null : step.id
+  )
+}
 
                     className="flex w-full items-center justify-between px-5 py-4 text-left"
                   >

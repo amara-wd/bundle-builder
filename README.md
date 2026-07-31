@@ -1,75 +1,111 @@
-# React + TypeScript + Vite
+# Frontend Bundle Builder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project was developed as a frontend take-home assignment. It is a responsive, data-driven bundle builder built with **React**, **TypeScript**, **Vite**, and **Tailwind CSS**, allowing users to configure a custom home security system with live pricing, variant selection, persistent storage, and a synchronized review panel.
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Live Demo
 
-## React Compiler
+https://amara-bundle-builder.netlify.app/
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## GitHub Repository
 
-## Expanding the ESLint configuration
+https://github.com/amara-wd/bundle-builder
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Features
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Multi-Step Bundle Builder
+- 4-step accordion workflow
+- Step navigation with Next button
+- Expand/collapse accordion sections
+- Selected item count for each step
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Product Configuration
+- Data-driven UI rendered from local JSON
+- Product images
+- Optional discount badges
+- Compare-at pricing
+- Quantity steppers
+- Variant/color selection with image thumbnails
+- Independent quantity tracking for every variant
 
+### Review Panel
+- Live summary grouped by category
+- Separate entries for selected variants
+- Quantity steppers synchronized with product cards
+- Shipping information
+- Satisfaction guarantee
+- Financing information
+- Savings calculation
+- Checkout modal
+- Save system for later
+
+### Persistence
+- Configuration saved using Local Storage
+- Product selections
+- Active variants
+- Selected plan
+- Configuration restored after page refresh
+
+### Responsive Design
+- Desktop layout matching the provided Figma
+- Responsive tablet and mobile layouts
+
+---
+
+## Tech Stack
+
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- Local Storage
+
+---
+
+
+## Getting Started
+
+### Clone the repository
+
+```bash
+git clone https://github.com/amara-wd/bundle-builder.git
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Install dependencies
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm install
 ```
+
+### Start the development server
+
+```bash
+npm run dev
+```
+
+### Build for production
+
+```bash
+npm run build
+```
+
+---
+
+## Implementation Notes
+
+- The application is fully data-driven using a local JSON file.
+- Product variants maintain independent quantities.
+- Review panel stays synchronized with product selections.
+- Bundle configuration is persisted using Local Storage.
+- The monthly subscription plan is displayed separately from the hardware total, matching the pricing behavior shown in the design.
+
+---
+
+
+## Author
+
+**Amara Inayat**
+
+Full-Stack Web Developer
