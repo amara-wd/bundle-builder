@@ -1,120 +1,74 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
 import CameraIcon from "../../assets/icons/camera.png";
 import PlanIcon from "../../assets/icons/plan.png";
 import SensorsIcon from "../../assets/icons/sensors.png";
 import ProtectionIcon from "../../assets/icons/protection.png";
 import ArrowDown from "../../assets/icons/arrow-down.png";
 import ArrowUp from "../../assets/icons/arrow-up.png";
+
+import ProductCard from "../product/ProductCard";
 import PlanCard from "../product/PlanCard";
+import ReviewPanel from "../review/ReviewPanel";
 import CheckoutModal from "../modal/CheckoutModal";
 import SaveModal from "../modal/SaveModal";
-import {
-  getProductQuantity,
-  getHardwareTotal,
-  getCompareTotal,
-  getSavings,
-  getGrandTotal,
-  getMonthlyPlanPrice,
-} from "../../utils/bundleCalculations";
-import {
-  loadSelections,
-  saveSelections,
-  loadVariants,
-  saveVariants,
-  loadPlan,
-  savePlan,
-} from "../../utils/storage";
-import productsData from "../../data/products.json";
+
+import useBundleState from "../../hooks/useBundleState";
+
+import { getProductQuantity } from "../../utils/bundleCalculations";
+
 import type {
-  ActiveVariants,
-  BundleSelections,
   BundleStep,
   PlanStep,
 } from "../../types/bundle";
-import ProductCard from "../product/ProductCard";
-import ReviewPanel from "../review/ReviewPanel";
 
 const BundleBuilder = () => {
-const [selections, setSelections] =
-  useState<BundleSelections>(loadSelections);
+const {
+  steps,
+  selections,
+  activeVariants,
+  selectedPlanId,
+  selectedPlan,
+  hardwareTotal,
+  compareTotal,
+  savings,
+  grandTotal,
+  monthlyPlanPrice,
+  updateQuantity,
+  updateActiveVariant,
+  setSelectedPlanId,
+} = useBundleState();
 
-const [activeVariants, setActiveVariants] =
-  useState<ActiveVariants>(loadVariants);
-
-const [activeStep, setActiveStep] = useState<BundleStep["id"]>("cameras");
-const [selectedPlanId, setSelectedPlanId] =
-  useState<string | null>(loadPlan);
-  const steps = productsData.steps as BundleStep[];
-const [showCheckoutModal, setShowCheckoutModal] =
-  useState(false);
 const stepIcons = {
   cameras: CameraIcon,
   plan: PlanIcon,
   sensors: SensorsIcon,
   protection: ProtectionIcon,
 };
-const [showSaveModal, setShowSaveModal] = useState(false);
 
-  const updateQuantity = (
-    productId: string,
-    variantId: string,
-    quantity: number
-  ) => {
-    setSelections((previousSelections) => ({
-      ...previousSelections,
 
-      [productId]: {
-        ...previousSelections[productId],
-        [variantId]: Math.max(0, quantity),
-      },
-    }));
-  };
-
-  const updateActiveVariant = (
-    productId: string,
-    variantId: string
-  ) => {
-    setActiveVariants((previousVariants) => ({
-      ...previousVariants,
-      [productId]: variantId,
-    }));
-  };
 
  
-const hardwareTotal = getHardwareTotal(
-  steps,
-  selections,
-  activeVariants
-);
 
-const compareTotal = getCompareTotal(
-  steps,
-  selections,
-  activeVariants
-);
-const savings = getSavings(
-  compareTotal,
-  hardwareTotal
-);
   const reviewSteps = [
   ...steps.filter(step => step.id !== "plan"),
   ...steps.filter(step => step.id === "plan"),
 ];
-const planStep = steps.find(
-  (step): step is PlanStep => step.id === "plan"
-);
+const [activeStep, setActiveStep] =
+  useState<BundleStep["id"]>("cameras");
 
-const selectedPlan = planStep?.plans.find(
-  (plan) => plan.id === selectedPlanId
-);
-const monthlyPlanPrice =
-  getMonthlyPlanPrice(selectedPlan);
-  const stepOrder: BundleStep["id"][] = [
+const [showCheckoutModal, setShowCheckoutModal] =
+  useState(false);
+
+const [showSaveModal, setShowSaveModal] =
+  useState(false);
+const stepOrder: BundleStep["id"][] = [
   "cameras",
   "plan",
   "sensors",
   "protection",
 ];
+
 const goToNextStep = () => {
   const currentIndex = stepOrder.indexOf(activeStep);
 
@@ -125,17 +79,6 @@ const goToNextStep = () => {
 const currentIndex = stepOrder.indexOf(activeStep);
 
 
-useEffect(() => {
-  saveSelections(selections);
-}, [selections]);
-useEffect(() => {
-  saveVariants(activeVariants);
-}, [activeVariants]);
-useEffect(() => {
-  if (selectedPlanId) {
-    savePlan(selectedPlanId);
-  }
-}, [selectedPlanId]);
 const nextStep =
   currentIndex < stepOrder.length - 1
     ? steps.find(
@@ -143,7 +86,6 @@ const nextStep =
           step.id === stepOrder[currentIndex + 1]
       )
     : null;
-   const grandTotal = getGrandTotal(hardwareTotal);
   return (
  <main className="min-h-screen bg-white">
   <div className="mx-auto flex w-full max-w-299 flex-col gap-6 py-12.25 lg:flex-row lg:items-start lg:gap-7.25">  {/* LEFT - BUILDER */}
