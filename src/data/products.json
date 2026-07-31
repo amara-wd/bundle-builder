@@ -20,17 +20,17 @@
             {
               "id": "white",
               "name": "White",
-              "swatch": "/images/variants/wyze-cam-v4-white.png"
+              "swatch": "/images/variants/v4white.png"
             },
             {
               "id": "grey",
               "name": "Grey",
-              "swatch": "/images/variants/wyze-cam-v4-grey.png"
+              "swatch": "/images/variants/v4grey.png"
             },
             {
               "id": "black",
               "name": "Black",
-              "swatch": "/images/variants/wyze-cam-v4-black.png"
+              "swatch": "/images/variants/v4black.png"
             }
           ]
         },
@@ -48,12 +48,12 @@
             {
               "id": "white",
               "name": "White",
-              "swatch": "/images/variants/wyze-cam-pan-v3-white.png"
+              "swatch": "/images/variants/white.png"
             },
             {
               "id": "black",
               "name": "Black",
-              "swatch": "/images/variants/wyze-cam-pan-v3-black.png"
+              "swatch": "/images/variants/black.png"
             }
           ]
         },
@@ -71,12 +71,12 @@
             {
               "id": "white",
               "name": "White",
-              "swatch": "/images/variants/wyze-cam-floodlight-v2-white.png"
+              "swatch": "/images/variants/v2white.png"
             },
             {
               "id": "black",
               "name": "Black",
-              "swatch": "/images/variants/wyze-cam-floodlight-v2-black.png"
+              "swatch": "/images/variants/v2black.png"
             }
           ]
         },
@@ -102,12 +102,12 @@
             {
               "id": "white",
               "name": "White",
-              "swatch": "/images/variants/wyze-battery-cam-pro-white.png"
+              "swatch": "/images/variants/prowhite.png"
             },
             {
               "id": "black",
               "name": "Black",
-              "swatch": "/images/variants/wyze-battery-cam-pro-black.png"
+              "swatch": "/images/variants/problack.png"
             }
           ]
         }
@@ -170,7 +170,7 @@
           "category": "sensors",
           "name": "Wyze Sense Motion Sensor",
           "description": "Detect movement and receive instant alerts when activity is detected.",
-          "image": "/images/s1.png",
+          "image": "/images/ssl.png",
           "price": 29.99,
           "learnMore": true,
           "variants": []
@@ -180,9 +180,9 @@
           "category": "sensors",
           "name": "Wyze Sense Hub (Required)",
           "description": "The central hub required to connect and manage your Wyze Sense devices.",
-          "image": "/images/s2.png",
-          "price": 0,
-          "compareAtPrice": 29.92,
+          "image": "/images/ssl2.png",
+          "price": 27.98,
+          "compareAtPrice": 35.98,
           "learnMore": true,
           "variants": []
         }
@@ -199,7 +199,7 @@
           "category": "protection",
           "name": "Wyze MicroSD Card (256GB)",
           "description": "Store your security footage locally with high-capacity storage.",
-          "image": "/images/a1.png",
+          "image": "/images/ss.png",
           "price": 20.98,
           "learnMore": true,
           "variants": []

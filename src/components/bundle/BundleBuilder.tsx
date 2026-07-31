@@ -143,10 +143,7 @@ const nextStep =
           step.id === stepOrder[currentIndex + 1]
       )
     : null;
-    const grandTotal = getGrandTotal(
-  hardwareTotal,
-  monthlyPlanPrice
-);
+   const grandTotal = getGrandTotal(hardwareTotal);
   return (
  <main className="min-h-screen bg-white">
   <div className="mx-auto flex w-full max-w-299 flex-col gap-6 py-12.25 lg:flex-row lg:items-start lg:gap-7.25">  {/* LEFT - BUILDER */}
@@ -171,9 +168,9 @@ const nextStep =
 const Icon =
   stepIcons[step.id as keyof typeof stepIcons];
               return (
-               <div
+                <>    <div
   key={step.id}
- className={`overflow-hidden rounded-[10px] border border-[#D8DCE8]
+ className={`overflow-hidden  rounded-lg pt-2
 ${
 isOpen
 ?
@@ -182,16 +179,24 @@ isOpen
 "bg-white"
 }`}
 >
+  <div className=" border-b border-[#5c5959]">
+  <p className="text-[10px] ml-5 uppercase tracking-[1px] text-[#8A8A8A]">
+        STEP {step.stepNumber} OF 4
+    </p>
+        </div>    
                   {/* Step Header */}
                   <button
                     type="button"
-                    onClick={() => setActiveStep(step.id)}
+                   onClick={() =>
+  setActiveStep((currentStep) =>
+    currentStep === step.id ? null : step.id
+  )
+}
+
                     className="flex w-full items-center justify-between px-5 py-4 text-left"
                   >
                   <div>
-    <p className="text-[10px] uppercase tracking-[1px] text-[#8A8A8A]">
-        STEP {step.stepNumber} OF 4
-    </p>
+   
 
     <div className="mt-1 flex items-center gap-2">
 
@@ -220,7 +225,7 @@ isOpen
 )}
 
   <img
-  src={isOpen ? ArrowUp : ArrowDown}
+  src={isOpen ? ArrowDown : ArrowUp}
   alt=""
 />
 </div>
@@ -228,9 +233,9 @@ isOpen
 
                   {/* Step Content */}
                   {isOpen && (
-  <div className="border-t border-slate-200 bg-slate-100 p-4">
+  <div className="border-t border-slate-200 bg-[#EDF4FF] p-4">
     {step.id === "plan" ? (
-  <div className="grid gap-4">
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
   {(step as PlanStep).plans.map((plan) => (
     <PlanCard
       key={plan.id}
@@ -274,13 +279,30 @@ isOpen
     {/* Next Button */}
    <div className="mt-6 flex justify-center">
   {step.stepNumber < 4 ? (
-    <button
-      type="button"
-      onClick={goToNextStep}
-      className="rounded-lg bg-[#4E2FD2] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#3e22b3]"
-    >
-      Next: {nextStep?.title}
-    </button>
+   <div className="mt-6 flex justify-center">
+  <button
+    type="button"
+    onClick={goToNextStep}
+    className="
+      min-w-55
+      rounded-lg
+      border
+      border-[#4E2FD2]
+     
+      px-4
+      py-2
+      text-[16px]
+      font-semibold
+      text-[#4E2FD2]
+      transition-all
+      duration-200
+      hover:bg-[#4E2FD2]
+      hover:text-white
+    "
+  >
+    Next: {nextStep?.title}
+  </button>
+</div>
   ) : (
     <button
       type="button"
@@ -293,7 +315,9 @@ isOpen
 </div>
   </div>
 )}
+<div className="border-b border-[#5c5959]"></div>
                 </div>
+                </>
               );
             })}
           </div>

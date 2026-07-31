@@ -20,7 +20,7 @@ const ProductCard = ({
 
   return (
  <article
-  className={`relative rounded-[14px] border-2 bg-white px-[16px] py-[14px] transition-all ${
+  className={`relative rounded-[14px] border-2 bg-white px-4 py-3.5 transition-all ${
     isSelected
       ? "border-[#6D4AFF]"
       : "border-[#E6EAF4]"
@@ -34,9 +34,9 @@ absolute
 left-3
 top-3
 rounded-full
-bg-[#5B39E6]
-px-[8px]
-py-[3px]
+bg-[#4E2FD2]
+px-2
+py-0.75
 text-[10px]
 font-semibold
 text-white"
@@ -45,24 +45,24 @@ text-white"
         </span>
       )}
 
-     <div className="flex gap-[14px]">
+     <div className="flex gap-3.5">
         {/* Product Image */}
-       <div className="flex w-[95px] items-center justify-center">
+       <div className="flex w-23.75 items-center justify-center">
           <img
             src={product.image}
             alt={product.name}
-          className="h-[110px] w-auto object-contain"
+          className="h-27.5 w-auto object-contain"
           />
         </div>
 
         {/* Product Information */}
        <div className="flex flex-1 flex-col justify-between">
-        <h3 className="text-[16px] font-semibold leading-[20px] text-[#232323]">
+        <h3 className="text-[16px] font-semibold leading-5 text-[#232323]">
             {product.name}
           </h3>
 
           {product.description && (
-           <p className="mt-1 text-[13px] leading-[18px] text-[#636363]">
+           <p className="mt-1 text-[13px] leading-4.5 text-[#636363]">
               {product.description}
             </p>
           )}
@@ -107,7 +107,7 @@ text-white"
               </div>
             )}
 
-          <div className="mt-auto flex items-end justify-between gap-4 pt-3">
+          <div className="mt-auto flex items-end justify-between gap-4 pt-2">
             {/* Quantity */}
             <QuantityStepper
             size="sm"

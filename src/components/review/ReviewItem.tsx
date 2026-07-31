@@ -65,7 +65,7 @@ const ReviewItem = ({
 
       <div className="w-15 text-right">
         {product.compareAtPrice && (
-          <p className="text-[10px] text-[#9A9A9A] line-through">
+          <p className="text-xs text-[#9A9A9A] line-through">
             ${(product.compareAtPrice * quantity).toFixed(2)}
           </p>
         )}

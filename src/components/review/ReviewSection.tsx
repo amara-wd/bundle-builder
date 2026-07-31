@@ -31,27 +31,22 @@ const ReviewSection = ({
 
   return (
     <div key={step.id}>
-      <h3 className="mb-2 text-xs font-medium uppercase text-slate-400">
+      <h3 className="text-xs pt-2 font-medium uppercase  text-slate-400 border-t border-[#CED6DE]">
         {step.reviewCategory}
       </h3>
 
-      <div className="flex items-center justify-between rounded-lg p-3">
-  <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between ">
+  <div className="flex items-center gap-3 ">
     <img
       src={PlanLogo}
       alt={selectedPlan.name}
       className=" object-contain"
     />
 
-    <div>
       <p className="text-sm font-semibold text-[#111827]">
         {selectedPlan.name}
       </p>
 
-      <p className="text-xs text-[#6B7280]">
-        Subscription Plan
-      </p>
-    </div>
   </div>
 
   <div className="text-right">
@@ -112,7 +107,7 @@ const reviewItems = productStep.products.flatMap((product) => {
 
  return (
   <div key={step.id}>
-    <h3 className="mb-2 text-xs font-medium uppercase text-slate-400">
+    <h3 className="mb-2 pt-2  text-xs font-medium uppercase text-slate-400 border-t border-[#CED6DE]">
       {step.reviewCategory}
     </h3>
 

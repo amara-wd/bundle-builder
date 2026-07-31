@@ -88,5 +88,4 @@ export const getSavings = (
 
 export const getGrandTotal = (
   hardwareTotal: number,
-  monthlyPlanPrice: number
-) => hardwareTotal + monthlyPlanPrice;
+) => hardwareTotal ;
