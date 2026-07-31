@@ -30,12 +30,12 @@ const ReviewItem = ({
         />
 
         <div className="min-w-0">
-          <p className="truncate text-xs font-medium">
+          <p className="truncate text-xs font-medium text-[#0B0D10]">
             {product.name}
           </p>
 
           {variant && (
-            <p className="text-[11px] text-slate-500">
+            <p className="text-[10px] md:text-[11px]  text-slate-500">
               {variant.name}
             </p>
           )}
@@ -65,12 +65,12 @@ const ReviewItem = ({
 
       <div className="w-15 text-right">
         {product.compareAtPrice && (
-          <p className="text-xs text-[#9A9A9A] line-through">
+          <p className="text-xs text-[#6F7882] line-through">
             ${(product.compareAtPrice * quantity).toFixed(2)}
           </p>
         )}
 
-        <p className="text-[12px] font-semibold text-[#4E2FD2]">
+        <p className=" text-[10px] md:text-[12px]  font-semibold text-[#4E2FD2]">
           ${(product.price * quantity).toFixed(2)}
         </p>
       </div>

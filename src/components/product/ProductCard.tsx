@@ -37,7 +37,7 @@ rounded-full
 bg-[#4E2FD2]
 px-2
 py-0.75
-text-[10px]
+ text-[10px] md:text-[12px]
 font-semibold
 text-white"
 >
@@ -57,12 +57,12 @@ text-white"
 
         {/* Product Information */}
        <div className="flex flex-1 flex-col justify-between">
-        <h3 className="text-[16px] font-semibold leading-5 text-[#232323]">
+        <h3 className=" text-[12px] md:text-[16px] font-semibold leading-5 text-[#232323]">
             {product.name}
           </h3>
 
           {product.description && (
-           <p className="mt-1 text-[13px] leading-4.5 text-[#636363]">
+           <p className="mt-1  text-[10px] md:text-[12px] leading-4.5 text-[#636363]">
               {product.description}
             </p>
           )}
@@ -70,7 +70,7 @@ text-white"
           {product.learnMore && (
             <button
               type="button"
-              className="mt-1 w-fit text-xs font-medium text-[#2458FF] underline"
+              className="mt-1 w-fit text-[10px] md:text-[12px] text-xs font-medium text-[#2458FF] underline"
             >
               Learn More
             </button>
@@ -87,7 +87,7 @@ text-white"
                     onClick={() =>
                       onVariantChange(variant.id)
                     }
-                    className={`flex items-center gap-1 rounded border px-2 py-1 text-xs ${
+                    className={`flex items-center gap-1 rounded border text-[10px]   px-2 py-1 text-xs ${
                       activeVariant === variant.id
                         ? "border-teal-500 bg-teal-50"
                         : "border-slate-200 bg-white"
@@ -123,12 +123,12 @@ text-white"
             {/* Price */}
             <div className="text-right">
               {product.compareAtPrice && (
-                <p className="text-xs text-red-500 line-through">
+                <p className="text-[12px] md:text-[16px]  text-red-500 line-through">
                   ${product.compareAtPrice.toFixed(2)}
                 </p>
               )}
 
-              <p className="text-sm font-medium text-slate-700">
+              <p className="text-[12px] md:text-[16px]  font-medium text-slate-700">
                 ${product.price.toFixed(2)}
               </p>
             </div>

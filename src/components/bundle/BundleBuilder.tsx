@@ -94,7 +94,7 @@ const nextStep =
     : null;
   return (
  <main className="min-h-screen bg-white">
-  <div className="mx-auto flex w-full max-w-299 flex-col gap-6 py-12.25 lg:flex-row lg:items-start lg:gap-7.25">  {/* LEFT - BUILDER */}
+  <div className="mx-auto flex w-full max-w-299  flex-col gap-6 py-12.25 lg:flex-row lg:items-start lg:gap-7.25">  {/* LEFT - BUILDER */}
 <section className="w-full lg:w-3xl">
          <div className="flex flex-col gap-3.25">
             {steps.map((step) => {
@@ -128,7 +128,7 @@ isOpen
 }`}
 >
   <div className=" border-b border-[#5c5959]">
-  <p className="text-[10px] ml-5 uppercase tracking-[1px] text-[#8A8A8A]">
+  <p className="text-[10px] md:text-[12px] ml-5 uppercase tracking-[1px] text-[#8A8A8A]">
         STEP {step.stepNumber} OF 4
     </p>
         </div>    
@@ -157,9 +157,9 @@ isOpen
     className="h-5 w-5 object-contain"
   />
 
-  <h2 className="text-[20px] font-semibold">
-    {step.title}
-  </h2>
+  <h2 className="text-[18px] font-semibold md:text-[22px]">
+  {step.title}
+</h2>
 </div>
 
     </div>
@@ -167,7 +167,7 @@ isOpen
 
                  <div className="flex items-center gap-2">
   {isOpen && (
-  <span className="text-[13px] font-medium text-[#6D4AFF]">
+  <span className=" text-[12px] md:text-[14px]  font-medium text-[#6D4AFF]">
     {selectedCount} selected
   </span>
 )}
@@ -239,7 +239,8 @@ isOpen
      
       px-4
       py-2
-      text-[16px]
+      text-[14px] 
+      md:text-[18px]
       font-semibold
       text-[#4E2FD2]
       transition-all

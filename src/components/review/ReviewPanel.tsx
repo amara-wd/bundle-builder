@@ -84,17 +84,17 @@ const ReviewPanel = ({
       className=" object-contain"
     />
 
-    <span className="text-[14px] font-medium  text-[#111827]">
+    <span className="text-[12px] md:text-[14px]  font-medium  text-[#111827]">
       Fast Shipping
     </span>
   </div>
 
   <div className="text-right leading-tight">
-    <p className="text-sm text-[#9CA3AF] line-through">
+    <p className="text-[12px] md:text-[14px] text-[#6F7882] line-through">
       $5.99
     </p>
 
-    <p className="text-[13px] font-semibold text-[#5B39E6]">
+    <p className="text-[12px] md:text-[14px] font-semibold text-[#5B39E6]">
       FREE
     </p>
   </div>
@@ -109,17 +109,17 @@ const ReviewPanel = ({
   />
 
   <div className="text-right">
-    <span className="rounded bg-[#5B39E6] px-2 py-1 text-[11px] font-medium text-white">
+    <span className="rounded bg-[#5B39E6] px-2 py-1 text-[12px] font-medium text-white">
       as low as ${(grandTotal / 12).toFixed(2)}/mo
     </span>
 <div className="mt-2 flex items-end justify-end gap-2">
   {compareTotal > hardwareTotal && (
-    <p className="text-md text-[#8F8F8F] line-through">
+    <p className="text-md  text-[14px] md:text-[18px] font-medium text-[#6F7882] line-through">
       ${compareTotal.toFixed(2)}
     </p>
   )}
 
-  <p className="text-[20px] font-bold text-[#4E2FD2]">
+  <p className="text-[20px] md:text-[24px] font-bold text-[#4E2FD2]">
     ${grandTotal.toFixed(2)}
   </p>
 </div>
@@ -129,7 +129,7 @@ const ReviewPanel = ({
 {/* Savings */}
 {savings > 0 && (
   <div className="mt-4 text-center">
-    <p className="text-[13px] font-semibold text-[#00A884]">
+    <p className="text-[12px] font-semibold text-[#00A884]">
       Congrats! You're saving ${savings.toFixed(2)} on your security bundle!
     </p>
   </div>
@@ -138,7 +138,7 @@ const ReviewPanel = ({
 {/* Checkout */}
 <button
   onClick={onCheckout}
-  className="w-full rounded-md bg-[#4E2FD2] py-2 text-lg font-semibold text-white transition hover:bg-[#3E22B3]"
+  className="w-full rounded-md bg-[#4E2FD2] py-2  text-[15px] md:text-[17px] font-semibold text-white transition hover:bg-[#3E22B3]"
 >
   Checkout
 </button>
@@ -146,7 +146,7 @@ const ReviewPanel = ({
 {/* Save */}
 <button
   onClick={onSave}
-  className="mt-1 w-full text-center text-[15px] italic text-[#666666] underline"
+  className="mt-1 w-full text-center  text-[12px] md:text-[14px]  italic text-[#666666] underline"
 >
   Save my system for later
 </button>

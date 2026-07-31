@@ -37,7 +37,7 @@ const ReviewSection = ({
 
   return (
     <div key={step.id}>
-      <h3 className="text-xs pt-2 font-medium uppercase  text-slate-400 border-t border-[#CED6DE]">
+      <h3 className="text-[12px] pt-2 font-light uppercase  text-[#A8B2BD] border-t border-[#CED6DE]">
         {step.reviewCategory}
       </h3>
 
@@ -49,7 +49,7 @@ const ReviewSection = ({
       className=" object-contain"
     />
 
-      <p className="text-sm font-semibold text-[#111827]">
+      <p className="text-[14px] font-semibold text-[#0B0D10]">
         {selectedPlan.name}
       </p>
 
@@ -57,12 +57,12 @@ const ReviewSection = ({
 
   <div className="text-right">
     {selectedPlan.compareMonthlyPrice && (
-      <p className="text-xs text-[#9CA3AF] line-through">
+      <p className="text-[14px] text-[#6F7882] line-through">
         ${selectedPlan.compareMonthlyPrice.toFixed(2)}/mo
       </p>
     )}
 
-    <p className="text-sm font-semibold text-[#4E2FD2]">
+    <p className="text-[14px] font-semibold text-[#4E2FD2]">
       ${selectedPlan.monthlyPrice.toFixed(2)}/mo
     </p>
   </div>
@@ -114,7 +114,7 @@ const reviewItems: ReviewItemData[] =
 
  return (
   <div key={step.id}>
-    <h3 className="mb-2 pt-2  text-xs font-medium uppercase text-slate-400 border-t border-[#CED6DE]">
+    <h3 className="mb-2 pt-2  text-xs font-light uppercase text-[#A8B2BD] border-t border-[#CED6DE]">
       {step.reviewCategory}
     </h3>
 
